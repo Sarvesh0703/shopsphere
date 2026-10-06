@@ -1,12 +1,47 @@
 import { Link } from "react-router-dom";
-import { ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart } from "lucide-react";
+
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
 
+  const {
+    toggleWishlist,
+    isInWishlist,
+  } = useWishlist();
+
+  const wishlistActive = isInWishlist(product.id);
+
+  const handleWishlist = () => {
+    toggleWishlist(product);
+  };
+
+  const handleAddToCart = () => {
+    addToCart(product);
+  };
+
   return (
-    <div className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-xl">
+    <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-xl">
+
+      {/* Wishlist Button */}
+      <button
+        onClick={handleWishlist}
+        className={`absolute right-3 top-3 z-10 rounded-full p-2 shadow-sm transition ${
+          wishlistActive
+            ? "bg-red-50 text-red-500"
+            : "bg-white text-slate-500 hover:text-red-500"
+        }`}
+        aria-label="Add to wishlist"
+      >
+        <Heart
+          size={19}
+          fill={wishlistActive ? "currentColor" : "none"}
+        />
+      </button>
+
+      {/* Product Image */}
       <Link to={`/products/${product.id}`}>
         <div className="flex h-56 items-center justify-center bg-slate-50 p-6">
           <img
@@ -17,7 +52,9 @@ const ProductCard = ({ product }) => {
         </div>
       </Link>
 
+      {/* Product Info */}
       <div className="p-5">
+
         <p className="mb-2 text-xs font-semibold uppercase text-indigo-600">
           {product.category}
         </p>
@@ -38,8 +75,9 @@ const ProductCard = ({ product }) => {
           </span>
         </div>
 
+        {/* Add Cart */}
         <button
-          onClick={() => addToCart(product)}
+          onClick={handleAddToCart}
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 py-3 font-semibold text-white transition hover:bg-indigo-700"
         >
           <ShoppingCart size={18} />
